@@ -5,7 +5,7 @@ https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT
 
 * したかったこと  
 Android の署名は META-INF/ 以下のファイルを削除することで無効化できる。  
-META-INF を削除する APK を再作成する処理を Java で実装。  
+入力された APK から META-INF を削除した APK を出力する処理を Java で実装。  
 加えて Android 4.0.3 以前の armeabi-v7a 端末は APK 中で lib/armeabi ディレクトリが  
 lib/armeabi-v7a ディレクトリよりも後ろにあると lib/armeabi ディレクトリの .so が  
 読み込まれるらしい。なのでエントリの順番を変える。  

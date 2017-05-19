@@ -1,5 +1,8 @@
 # Zipファイルのエントリ変更
 
+* Zip 仕様  
+https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT
+
 * したかったこと  
 Android の署名は META-INF/ 以下のファイルを削除することで無効化できる。  
 META-INF を削除する APK を再作成する処理を Java で実装。  

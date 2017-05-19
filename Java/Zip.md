@@ -1,17 +1,17 @@
 # Zipファイルのエントリ変更
 
-* したかったこと
-Android の署名は META-INF/ 以下のファイルを削除することで無効化できる。
-META-INF を削除する APK を再作成する処理を Java で実装。
-加えて Android 4.0.3 以前の armeabi-v7a 端末は APK 中で lib/armeabi ディレクトリが
-lib/armeabi-v7a ディレクトリよりも後ろにあると lib/armeabi ディレクトリの .so が
-読み込まれるらしい。なのでエントリの順番を変える。
-→https://developer.android.com/ndk/guides/abis.html?hl=ja
-
-* 方法
-ZipInputStream で各エントリを周り、ZipOutputStream で必要な順でエントリを追加していく。
-
-* 実装
+* したかったこと  
+Android の署名は META-INF/ 以下のファイルを削除することで無効化できる。  
+META-INF を削除する APK を再作成する処理を Java で実装。  
+加えて Android 4.0.3 以前の armeabi-v7a 端末は APK 中で lib/armeabi ディレクトリが  
+lib/armeabi-v7a ディレクトリよりも後ろにあると lib/armeabi ディレクトリの .so が  
+読み込まれるらしい。なのでエントリの順番を変える。  
+→https://developer.android.com/ndk/guides/abis.html?hl=ja  
+  
+* 方法  
+ZipInputStream で各エントリを周り、ZipOutputStream で必要な順でエントリを追加していく。 
+  
+* 実装  
 ```java:sample.java
 class ZipOptimizer {
 	private Path apkFile;
@@ -123,25 +123,25 @@ class ZipOptimizer {
 	}
 }
 ```
-
-* 注意点
-** ZipEntry.getCompressedSize()
-元の Zip と作成する Zip の圧縮レベルが違えば当然上記の値も変わる。
-元 Zip から取り出した ZipEntry には上記のプロパティは記載されている。
-取り出したままで Entry を書き出そうとすると実際の書き出しバイト数と
-エントリに記載されている値が違うことで例外 ZipException がスローされる。
-対策として ZipEntry.getCompressedSize() は取り出せなければ -1 が変えるので
-これをセットしてから書き込むようにすれば万が一圧縮レベルにズレがあっても
-例外が発生することはない。
-
-* 結果
-エントリの順番も変わって、未署名状態の APK が作成できた。
-ただ、エントリの順番を変えても Android 4.0.3 がインストールされた armeabi-v7a 端末は
-lib/armeabi/ 以下の .so をロードしている。
-→proc/[PID]/~.so を dump して確認。
-対策としては以下しかないのだろうか。
-→https://groups.google.com/forum/#!msg/android-ndk/N8FLjvM81pg/2rYeClQZcckJ
+ 
+* 注意点  
+	* ZipEntry.getCompressedSize()  
+元の Zip と作成する Zip の圧縮レベルが違えば当然上記の値も変わる。  
+元 Zip から取り出した ZipEntry には上記のプロパティは記載されている。  
+取り出したままで Entry を書き出そうとすると実際の書き出しバイト数と  
+エントリに記載されている値が違うことで例外 ZipException がスローされる。  
+対策として ZipEntry.getCompressedSize() は取り出せなければ -1 が変えるので  
+これをセットしてから書き込むようにすれば万が一圧縮レベルにズレがあっても  
+例外が発生することはない。  
+  
+* 結果  
+エントリの順番も変わって、未署名状態の APK が作成できた。  
+ただ、エントリの順番を変えても Android 4.0.3 がインストールされた armeabi-v7a 端末は  
+lib/armeabi/ 以下の .so をロードしている。  
+→proc/[PID]/~.so を dump して確認。  
+対策としては以下しかないのだろうか。  
+→https://groups.google.com/forum/#!msg/android-ndk/N8FLjvM81pg/2rYeClQZcckJ  
 `I have a different approach. I put both arm and armv7 binaries into
 the armeabi directory, and I then use the cpu-features library in
 order to decide whether I load the optimized library or not, using
-dlopen(). It works just great.`
+dlopen(). It works just great.` 
